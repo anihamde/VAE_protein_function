@@ -48,7 +48,7 @@ class VAE_conv(nn.Module):
 		for layer in self.layers_enc_pre_view:
 			x = layer(x)
 
-		x = x.view(-1,enc_view)
+		x = x.view(-1,self.enc_view)
 
 		for layer in self.layers_enc_post_view:
 			x = layer(x)
