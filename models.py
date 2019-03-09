@@ -62,3 +62,47 @@ class VAE_conv(nn.Module):
 			x = layer(x)
 		
 		return x
+
+
+
+
+class VAE_rec(nn.Module):
+	def __init__(self,layers_enc,layers_enc_post_rec,layers_ae,layers_dec_pre_rec,layers_dec,layers_dec_post_rec):
+		super(VAE_rec, self).__init__()
+		self.layers_enc = layers_enc
+		self.layers_enc_post_rec = layers_enc_post_rec
+		self.layers_ae = layers_ae
+		self.layers_dec_pre_rec = layers_dec_pre_rec
+		self.layers_dec = layers_dec
+		self.layers_dec_post_rec = layers_dec_post_rec       
+		
+	def forward(self, x):
+		x_init = x
+		
+		for layer in self.layers_enc:
+			_, x = layer(x)
+
+		x = x.transpose(0,1)
+		x = x.squeeze(2)
+
+		for layer in self.layers_enc_post_rec:
+			x = layer(x)
+
+		self.z_mean = self.layers_ae[0](x)
+		self.z_log_var = self.layers_ae[1](x)
+
+		x = sampling(self.z_mean, self.z_log_var, self.layers_ae[0].out_features)
+		
+		for layer in self.layers_dec_pre_rec:
+			x = layer(x)
+
+		x = x.view(x.shape[0],4,-1)
+		x = x.transpose(0,1)
+
+		for layer in self.layers_dec:
+			x, _ = layer(torch.zeros(x_init.shape[0],x_init.shape[1],layer.input_size),x)
+
+		for layer in self.layers_dec_post_rec:
+			x = layer(x)
+		
+		return x
