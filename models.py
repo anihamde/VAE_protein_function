@@ -78,31 +78,49 @@ class VAE_rec(nn.Module):
 		
 	def forward(self, x):
 		x_init = x
+		print ("After init: ", x.shape)
 		
 		for layer in self.layers_enc:
-			_, x = layer(x)
+			# _, x = layer(x)
+			x, _ = layer(x) # use output instead of last hidden layer
+			print ("in the loop: ", x.shape)
 
-		x = x.transpose(0,1)
-		x = x.squeeze(2)
+		# x = x.transpose(0,1)
+		print ("after transpose: ", x.shape)
+		# x = x.squeeze(2)
+		x = x.reshape(x.shape[0], -1) #output instead of hidden
+		print ("after squeeze: ", x.shape)
 
 		for layer in self.layers_enc_post_rec:
 			x = layer(x)
+			print ("layer :", x.shape)
 
 		self.z_mean = self.layers_ae[0](x)
 		self.z_log_var = self.layers_ae[1](x)
 
 		x = sampling(self.z_mean, self.z_log_var, self.layers_ae[0].out_features)
-		
-		for layer in self.layers_dec_pre_rec:
-			x = layer(x)
+		print ("sampling :", x.shape)
 
-		x = x.view(x.shape[0],4,-1)
-		x = x.transpose(0,1)
-
+		# with linear decoder
 		for layer in self.layers_dec:
-			x, _ = layer(torch.zeros(x_init.shape[0],x_init.shape[1],layer.input_size),x)
-
-		for layer in self.layers_dec_post_rec:
 			x = layer(x)
 		
 		return x
+
+		#with rnn decoder
+		
+		# for layer in self.layers_dec_pre_rec:
+		# 	x = layer(x)
+		# 	print ("after another layer: ", x.shape)
+
+		# x = x.view(x.shape[0],4,-1)
+		# x = x.transpose(0,1)
+
+
+		# for layer in self.layers_dec:
+		# 	x, _ = layer(torch.zeros(x_init.shape[0],x_init.shape[1],layer.input_size),x)
+
+		# for layer in self.layers_dec_post_rec:
+		# 	x = layer(x)
+		
+		# return x
