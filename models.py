@@ -77,29 +77,30 @@ class VAE_rec(nn.Module):
 		self.layers_dec_post_rec = layers_dec_post_rec       
 		
 	def forward(self, x):
+		bs = x.shape[0]
 		x_init = x
-		print ("After init: ", x.shape)
+# 		print ("After init: ", x.shape)
 		
 		for layer in self.layers_enc:
 			# _, x = layer(x)
 			x, _ = layer(x) # use output instead of last hidden layer
-			print ("in the loop: ", x.shape)
+# 			print ("in the loop: ", x.shape)
 
-		# x = x.transpose(0,1)
-		print ("after transpose: ", x.shape)
+# 		x = x.transpose(0,1)
+# 		print ("after transpose: ", x.shape)
 		# x = x.squeeze(2)
-		x = x.reshape(x.shape[0], -1) #output instead of hidden
-		print ("after squeeze: ", x.shape)
+		x = x.reshape(bs, 164) #output instead of hidden
+# 		print ("after squeeze: ", x.shape)
 
 		for layer in self.layers_enc_post_rec:
 			x = layer(x)
-			print ("layer :", x.shape)
+# 			print ("layer :", x.shape)
 
 		self.z_mean = self.layers_ae[0](x)
 		self.z_log_var = self.layers_ae[1](x)
 
 		x = sampling(self.z_mean, self.z_log_var, self.layers_ae[0].out_features)
-		print ("sampling :", x.shape)
+# 		print ("sampling :", x.shape)
 
 		# with linear decoder
 		for layer in self.layers_dec:
