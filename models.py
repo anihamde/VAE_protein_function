@@ -83,7 +83,7 @@ class VAE_rec(nn.Module):
 		self.layers_dec_post_rec = layers_dec_post_rec
 		self.dec_lin = dec_lin       
 		
-	def forward(self, x, train_stat=True):
+	def forward(self, x, train_stat=True, lang_mod = False):
 		bs = x.shape[0]
 		seq_len = x.shape[1]
 		x_init = x
@@ -97,7 +97,7 @@ class VAE_rec(nn.Module):
 # # 		x = x.transpose(0,1)
 # # 		print ("after transpose: ", x.shape)
 # 		# x = x.squeeze(2)
-# 		x = x.reshape(bs, 164) #output instead of hidden
+# 		x = x.reshape(bs, 164) #outpt instead of hidden
 # # 		print ("after squeeze: ", x.shape)
 
 # 		for layer in self.layers_enc_post_rec:
@@ -117,8 +117,11 @@ class VAE_rec(nn.Module):
 		if self.dec_lin: # with linear decoder
 			for layer in self.layers_dec:
 				x = layer(x)
-			
+
 		else: # with rnn decoder
+                        if lang_mod:
+                                x = torch.zeros_like(x)
+
 			hid_0 = self.layers_dec[0](x)
 			x = x.transpose(0,1)
 
