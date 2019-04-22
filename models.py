@@ -119,10 +119,9 @@ class VAE_rec(nn.Module):
 				x = layer(x)
 
 		else: # with rnn decoder
-			if lang_mod:
-				x = torch.zeros_like(x)
-
 			hid_0 = self.layers_dec[0](x)
+			if lang_mod:
+				hid_0 = torch.zeros_like(hid_0)
 			x = x.transpose(0,1)
 
 			if train_stat: # if training, then do teacher forcing
