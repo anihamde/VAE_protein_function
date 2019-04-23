@@ -121,7 +121,7 @@ class VAE_rec(nn.Module):
 		else: # with rnn decoder
 			hid_0 = self.layers_dec[0](x)
 			if lang_mod:
-				hid_0 = torch.zeros_like(hid_0)
+				hid_0 = torch.zeros_like(hid_0)-1
 			x = x.transpose(0,1)
 
 			if train_stat: # if training, then do teacher forcing
@@ -148,6 +148,7 @@ class VAE_rec(nn.Module):
 						inter = hids[-1][-2:].transpose(0,1)
 						inter = inter.contiguous().view(bs,-1)
 						predx_t = self.layers_dec_post_rec[0](inter)
+						# generally self.layers_dec_post_rec only has one layer, so for loop below usually not useful
 						for layer_sub in self.layers_dec_post_rec[1:]:
 							predx_t = layer_sub(predx_t)
 							xs.append(predx_t)
