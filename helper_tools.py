@@ -6,11 +6,17 @@ ORDER_KEY="XILVAGMFYWEDQNHCRKSTPBZ-"[::-1]
 ORDER_LIST=list(ORDER_KEY)
 
 #Drop columns that are not part of the alignment
-def prune_seq(sequence):
-    output=""
-    for s in sequence:
-        if s!="." and not (s.islower()):
-            output+=s
+def prune_seq(sequence,var_len=False):
+    if var_len:
+        output=""
+        for s in sequence:
+            if s!="." and not (s.islower()) and s!="-":
+                output+=s
+    else:
+        output=""
+        for s in sequence:
+            if s!="." and not (s.islower()):
+                output+=s
     return output
 
 #Find the indices of aligned columns, Note that indices are 0-indexed
