@@ -2,8 +2,8 @@ import pandas as pd
 import numpy as np 
 
 #Invariants
-ORDER_KEY="XILVAGMFYWEDQNHCRKSTPBZ-"[::-1]
-ORDER_LIST=list(ORDER_KEY)
+# ORDER_KEY="XILVAGMFYWEDQNHCRKSTPBZ-"[::-1]
+# ORDER_LIST=list(ORDER_KEY)
 
 #Drop columns that are not part of the alignment
 def prune_seq(sequence,var_len=False):
@@ -111,7 +111,7 @@ def compute_log_probability(one_hot_seq,pwm):
     return sum_diag
 
 #Compute the most likely protein sequence given a position weight matrix
-def most_likely_seq(pwm):
+def most_likely_seq(pwm,ORDER_LIST):
     most_likely=np.argmax(pwm,axis=0)
     out_seq=""
     for m in most_likely:

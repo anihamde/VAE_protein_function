@@ -83,7 +83,7 @@ class VAE_rec(nn.Module):
 		self.layers_dec_post_rec = layers_dec_post_rec
 		self.dec_lin = dec_lin       
 		
-	def forward(self, x, train_stat=True, lang_mod = False):
+	def forward(self, x, train_stat=True, lang_mod = False, test_pred = 'naive_arg', nbeams = 10): # test_pred can be one of ['naive_arg','naive_soft','beam']
 		bs = x.shape[0]
 		seq_len = x.shape[1]
 		x_init = x
@@ -140,6 +140,12 @@ class VAE_rec(nn.Module):
 				for layer in self.layers_dec[1:]: # should only be 1 more layer in this ModuleList
 					predx_t,hid_t = layer(torch.zeros_like(x_init[:,0,:]).unsqueeze(-2), hid_0)
 
+					if test_pred == 'naive_arg':
+						args = torch.argmax(predx_t,-1).view(-1)
+						predx_t = torch.zeros_like(predx_t)
+						for i in range(predx_t.shape[0]):
+							predx_t[i][0][args[i]] = 1
+
 					xs.append(predx_t)
 					hids.append(hid_t)
 
@@ -154,6 +160,12 @@ class VAE_rec(nn.Module):
 							xs.append(predx_t)
 
 						predx_t = softmaxfunc(predx_t)
+
+						if test_pred == 'naive_arg':
+							args = torch.argmax(predx_t,-1).view(-1)
+							predx_t = torch.zeros_like(predx_t)
+							for i in range(predx_t.shape[0]):
+								predx_t[i][0][args[i]] = 1
 
 						_,hid_tplusone = layer(predx_t.unsqueeze(1), hids[-1])
 
