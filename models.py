@@ -8,6 +8,23 @@ import copy
 epsilon_std = 1.0
 softmaxfunc = nn.Softmax(-1)
 
+class Reg_NN(nn.Module):
+	def __init__(self, hidden_size, input_size, output_size):
+		super(Reg_NN, self).__init__()
+		self.model = torch.nn.Sequential(
+			torch.nn.Linear(input_size, hidden_size),
+			torch.nn.ReLU(),
+			torch.nn.Linear(hidden_size, hidden_size),
+			torch.nn.ReLU(),
+			torch.nn.Linear(hidden_size, output_size)
+		)
+
+	def forward(self, x):
+		return self.model(x)
+
+
+
+
 def sampling(z_mean, z_log_var, latent_dim): 
 	epsilon = torch.normal(torch.Tensor([[0.]*latent_dim]*len(z_mean)),std=epsilon_std)
 	return z_mean + torch.exp(z_log_var / 2) * epsilon
