@@ -165,7 +165,7 @@ class VAE_rec(nn.Module):
 							args = torch.argmax(predx_t,-1).view(-1)
 							predx_t = torch.zeros_like(predx_t)
 							for i in range(predx_t.shape[0]):
-								predx_t[i][0][args[i]] = 1
+								predx_t[i][args[i]] = 1
 
 						_,hid_tplusone = layer(predx_t.unsqueeze(1), hids[-1])
 
