@@ -6,12 +6,18 @@ import numpy as np
 # ORDER_LIST=list(ORDER_KEY)
 
 #Drop columns that are not part of the alignment
-def prune_seq(sequence,var_len=False):
+def prune_seq(sequence,var_len=False,unaligned=False):
     if var_len:
-        output=""
-        for s in sequence:
-            if s!="." and not (s.islower()) and s!="-":
-                output+=s
+        if unaligned:
+            output=""
+            for s in sequence:
+                if s!="." and s!="-":
+                    output+=s.upper()
+        else:
+            output=""
+            for s in sequence:
+                if s!="." and not (s.islower()) and s!="-":
+                    output+=s
     else:
         output=""
         for s in sequence:
